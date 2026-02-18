@@ -1,0 +1,194 @@
+// Coder's Vibe Theme
+
+// Variables
+$primary-color: #00ff88; // Neon Green
+$primary-hover: #00cc6a;
+$bg-color: #0d1117; // GitHub Dark Dimmed / VS Code dark
+$card-bg: rgba(22, 27, 34, 0.95); // Darker card
+$text-color: #e6edf3;
+$text-light: #8b949e;
+$border-color: #30363d;
+$input-bg: #010409;
+$shadow: 0 0 20px rgba(0, 255, 136, 0.05), 0 10px 40px rgba(0, 0, 0, 0.5);
+$success-color: #2ea043;
+$error-color: #da3633;
+$font-stack: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+
+.email-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $bg-color;
+  background-image:
+    linear-gradient(rgba(48, 54, 61, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48, 54, 61, 0.2) 1px, transparent 1px);
+  background-size: 30px 30px; // Grid pattern
+  padding: 2rem;
+  font-family: $font-stack;
+  color: $text-color;
+}
+
+.email-wrapper {
+  width: 100%;
+  max-width: 600px;
+}
+
+.email-card {
+  background: $card-bg;
+  backdrop-filter: blur(5px);
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  box-shadow: $shadow;
+  padding: 2.5rem;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+
+  // Top bar "terminal" look
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-color, #00d2ff);
+  }
+
+  @media (max-width: 640px) {
+    padding: 1.5rem;
+  }
+}
+
+.email-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: $primary-color;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba($primary-color, 0.3);
+
+    &::before {
+      content: '> ';
+    }
+  }
+
+  p {
+    color: $text-light;
+    font-size: 0.9rem;
+    font-family: system-ui, -apple-system, sans-serif; // Make subtitle readable
+  }
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-color;
+    margin-left: 0.25rem;
+    opacity: 0.8;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 1rem;
+    background-color: $input-bg;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #fff;
+    font-family: $font-stack;
+    transition: all 0.2s ease;
+    outline: none;
+
+    &::placeholder {
+      color: #484f58;
+    }
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+      background-color: darken($input-bg, 2%);
+    }
+  }
+
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+}
+
+.status-message {
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: $font-stack;
+  text-align: left;
+  margin-top: 0.5rem;
+  border-left: 4px solid;
+
+  &.success {
+    background-color: rgba($success-color, 0.1);
+    color: lighten($success-color, 10%);
+    border-color: $success-color;
+  }
+
+  &.error {
+    background-color: rgba($error-color, 0.1);
+    color: lighten($error-color, 10%);
+    border-color: $error-color;
+  }
+}
+
+.submit-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 1rem;
+  background-color: transparent;
+  color: $primary-color;
+  border: 1px solid $primary-color;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: $font-stack;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($primary-color, 0.1);
+    box-shadow: 0 0 15px rgba($primary-color, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: $text-light;
+    color: $text-light;
+  }
+}
