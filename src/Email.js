@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import './Email.scss';
 
+// Port 5000 is deliberately avoided: macOS binds it for the AirPlay Receiver,
+// which answers every request with a 403 and makes the API look broken.
+// Override with REACT_APP_API_URL when the backend lives elsewhere.
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5055';
+
 function Email() {
     const [formData, setFormData] = useState({
         to: '',
@@ -18,6 +23,14 @@ function Email() {
         }));
     };
 
+    const isEmpty = !formData.to && !formData.subject && !formData.message;
+
+    const handleReset = () => {
+        setFormData({ to: '', subject: '', message: '' });
+        setStatus('idle');
+        setMsgContent('');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus('loading');
@@ -32,10 +45,13 @@ function Email() {
         };
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/send-mail', request);
+            const response = await fetch(`${API_URL}/send-mail`, request);
 
+            // Surface the server's own message ("'to' is required", "Mail is
+            // not configured…") instead of a generic failure string.
             if (!response.ok) {
-                throw new Error("Failed to send email");
+                const detail = await response.json().catch(() => null);
+                throw new Error(detail?.message || `Failed to send email (${response.status})`);
             }
 
             const result = await response.json();
@@ -55,11 +71,13 @@ function Email() {
             <div className="email-wrapper">
                 <div className="email-card">
                     <header className="email-header">
-                        <h1>Compose Email</h1>
-                        <p>Send your message instantly</p>
+                        <h1>New message</h1>
+                        <p>Delivered over SMTP by the Flask API.</p>
                     </header>
 
-                    <form onSubmit={handleSubmit} className="email-form">
+                    {/* The submit button lives in the action bar outside the
+                        form, so it associates back via form="compose-form". */}
+                    <form id="compose-form" onSubmit={handleSubmit} className="email-form">
                         <div className="form-group">
                             <label htmlFor="to">Recipient</label>
                             <input
@@ -91,23 +109,44 @@ function Email() {
                             <textarea
                                 id="message"
                                 name="message"
-                                placeholder="Your message here..."
+                                placeholder="Write your message"
                                 value={formData.message}
                                 onChange={handleChange}
                                 required
                             />
                         </div>
 
+                        {/* role/aria-live so a screen reader announces the result;
+                            the colour change alone is not an accessible signal. */}
                         {msgContent && (
-                            <div className={`status-message ${status}`}>
+                            <div
+                                className={`status-message ${status}`}
+                                role={status === 'error' ? 'alert' : 'status'}
+                                aria-live="polite"
+                            >
                                 {msgContent}
                             </div>
                         )}
-
-                        <button type="submit" className="submit-btn" disabled={status === 'loading'}>
-                            {status === 'loading' ? 'Sending...' : 'Send Email'}
-                        </button>
                     </form>
+
+                    <div className="email-actions">
+                        <button
+                            type="button"
+                            className="ghost-btn"
+                            onClick={handleReset}
+                            disabled={status === 'loading' || isEmpty}
+                        >
+                            Clear
+                        </button>
+                        <button
+                            type="submit"
+                            form="compose-form"
+                            className="submit-btn"
+                            disabled={status === 'loading'}
+                        >
+                            {status === 'loading' ? 'Sending…' : 'Send'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
